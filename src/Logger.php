@@ -38,7 +38,7 @@ class Logger extends AbstractLogger
      * @var array
      */
     protected $options = array (
-        'extension'      => 'txt',
+        'extension'      => 'log',
         'dateFormat'     => 'Y-m-d G:i:s.u',
         'filename'       => false,
         'flushFrequency' => false,
@@ -145,16 +145,21 @@ class Logger extends AbstractLogger
     /**
      * @param string $logDirectory
      */
-    public function setLogFilePath($logDirectory) {
+    public function setLogFilePath($logDirectory)
+    {
         if ($this->options['filename']) {
             if (strpos($this->options['filename'], '.log') !== false || strpos($this->options['filename'], '.txt') !== false) {
-                $this->logFilePath = $logDirectory.DIRECTORY_SEPARATOR.$this->options['filename'];
-            }
-            else {
-                $this->logFilePath = $logDirectory.DIRECTORY_SEPARATOR.$this->options['filename'].'.'.$this->options['extension'];
+                $this->logFilePath = $logDirectory . DIRECTORY_SEPARATOR . $this->options['filename'];
+            } else {
+                $this->logFilePath = $logDirectory . DIRECTORY_SEPARATOR . $this->options['filename'] . '.' . $this->options['extension'];
             }
         } else {
-            $this->logFilePath = $logDirectory.DIRECTORY_SEPARATOR.$this->options['prefix'].date('Y-m-d').'.'.$this->options['extension'];
+            $this->logFilePath = $logDirectory . DIRECTORY_SEPARATOR . date('Y-m-d') . '.' . $this->options['extension'];
+            $i = 1;
+            while (file_exists($this->logFilePath) && filesize($this->logFilePath) > 2 * 1024 * 1024) {
+                $this->logFilePath = $logDirectory . DIRECTORY_SEPARATOR . date('Y-m-d') . '(' . $i . ')' . '.' . $this->options['extension'];
+                $i++;
+            }
         }
     }
 
